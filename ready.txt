@@ -1,0 +1,258 @@
+# ══════════════════════════════════════════════════════
+#  READY.TXT — Album Availability Control
+#  Exported: 2026-03-23 02:48
+#
+#  FORMAT:  album-id = ready | unready
+#  Any album NOT listed defaults to → unready
+# ══════════════════════════════════════════════════════
+
+# ─── KANYE WEST ───────────────────────────────────
+the-college-dropout           = ready
+late-registration             = ready
+graduation                    = ready
+808s                          = ready
+mbdtf                         = ready
+yeezus                        = ready
+tlop                          = ready
+ye                            = ready
+jesus-is-king                 = ready
+donda                         = soon
+donda-2                       = soon
+bully                         = ready
+yandhi                        = soon
+turbo-grafx-16                = soon
+
+# ─── JAŸ-Z ────────────────────────────────────────
+watch-throne                  = ready
+
+# ─── GOOD MUSIC ───────────────────────────────────
+cruel-summer                  = ready
+
+# ─── KIDS SEE GHOSTS ──────────────────────────────
+kids-see-ghosts               = ready
+
+# ─── ¥$ ───────────────────────────────────────────
+vultures-1                    = soon
+vultures-2                    = soon
+
+# ─── PLAYBOI CARTI ────────────────────────────────
+die-lit                       = ready
+self-titled_playboi-carti     = ready
+IAMMUSIC                      = ready
+wlr-released                  = ready
+wlr-v1                        = soon
+wlr-v2                        = soon
+wlr-v3                        = soon
+
+# ─── TYLER, THE CREATOR ───────────────────────────
+goblin                        = soon
+wolf                          = ready
+cherry-bomb                   = soon
+flower-boy                    = ready
+igor                          = ready
+cmiygl                        = soon
+cmiygl-deluxe                 = soon
+chromakopia                   = soon
+dont-tap-the-glass            = soon
+bastard                       = soon
+
+# ─── KENDRICK LAMAR ───────────────────────────────
+section-80                    = soon
+good-kid-maad-city            = soon
+to-pimp-a-butterfly           = soon
+damn                          = ready
+damn_collectors               = ready
+
+# ─── LIL UZI VERT ─────────────────────────────────
+luv_is_rage                   = soon
+lil_uzi_vert_vs_the_world     = soon
+eternal-atake                 = soon
+luv_vs_the_world_2            = soon
+pink-tape                     = soon
+eternal-atake-og              = ready
+no-luv-lost                   = soon
+
+# ─── TRAVIS SCOTT ─────────────────────────────────
+astroworld                    = ready
+rodeo                         = soon
+days-before-rodeo             = soon
+bittsmk                       = soon
+jack-boys                     = soon
+jack-boys-2                   = soon
+
+# ─── MAC DEMARCO ──────────────────────────────────
+old-dog_mac-demarco           = ready
+rock-and-roll-night-club_mac-demarco = soon
+2_mac-demarco                 = ready
+salad-days_mac-demarco        = ready
+another-one_mac-demarco       = soon
+here-comes-the-cowboy_mac-demarco = soon
+five-easy-hot-dogs_mac-demarco = soon
+one-wayne-g_mac-demarco       = soon
+
+# ─── MF DOOM ──────────────────────────────────────
+operation-doomsday_mf-doom    = soon
+mm-food_mf-doom               = soon
+born-like-this_mf-doom        = soon
+
+# ─── KING GHIDRA ──────────────────────────────────
+take-me-to-your-leader_king-gedorah = soon
+
+# ─── MADVILLAIN ───────────────────────────────────
+madvillainy_madvillain        = soon
+
+# ─── DANGER DOOM ──────────────────────────────────
+the-mouse-and-the-mask_danger-doom = soon
+
+# ─── VIKTOR VAUGHN ────────────────────────────────
+vaudeville-villain_viktor-vaughn = soon
+venomous-villain_viktor-vaughn = soon
+
+# ─── CZARFACE & MF DOOM ───────────────────────────
+czarface-meets-metal-face_czarface-mf-doom = soon
+super-what_czarface-mf-doom   = soon
+
+# ─── KEN CARSON ───────────────────────────────────
+project-x_ken-carson          = ready
+x_ken-carson                  = ready
+a-great-chaos_ken-carson      = ready
+more-chaos_ken-carson         = ready
+
+# ─── DESTROY LONELY ───────────────────────────────
+if-looks-could-kill_destroy-lonely = soon
+love-lasts-forever_destroy-lonely = soon
+
+# ─── HOMIXIDE GANG ────────────────────────────────
+homixide-lifestyle_homixide-gang = soon
+snot-or-not_homixide-gang     = ready
+homixide-lifestyle-2_homixide-gang = ready
+5THAMNDMNT                    = soon
+snottyworld                   = soon
+i5u5we5                       = ready
+
+# ─── A$AP ROCKY ───────────────────────────────────
+live-love-asap_asap-rocky     = soon
+long-live-asap_asap-rocky     = soon
+at-long-last-asap_asap-rocky  = soon
+testing_asap-rocky            = soon
+
+# ─── A$AP MOB ─────────────────────────────────────
+lords-never-worry_asap-mob    = soon
+cozy-tapes-vol-1_asap-mob     = soon
+cozy-tapes-vol-2_asap-mob     = soon
+
+# ─── ODD FUTURE ───────────────────────────────────
+the-of-tape-vol-2_odd-future  = soon
+
+# ─── FRANK OCEAN ──────────────────────────────────
+channel-orange_frank-ocean    = soon
+endless_frank-ocean           = soon
+blonde_frank-ocean            = soon
+
+# ─── YEAT ─────────────────────────────────────────
+up-2-me_yeat                  = soon
+2-alive_yeat                  = soon
+afterlyfe_yeat                = soon
+2093_yeat                     = soon
+
+# ─── YOUNG THUG ───────────────────────────────────
+so-much-fun_young-thug        = soon
+punk_young-thug               = soon
+business-is-business_young-thug = soon
+
+# ─── FUTURE ───────────────────────────────────────
+pluto_future                  = soon
+honest_future                 = soon
+ds2_future                    = soon
+future_future                 = soon
+hndrxx_future                 = soon
+the-wizrd_future              = soon
+high-off-life_future          = soon
+i-never-liked-you_future      = soon
+
+# ─── JOEY BADA$$ ──────────────────────────────────
+b4-da-ss_joey-badass          = soon
+all-amerikkkan-badass_joey-badass = soon
+2000_joey-badass              = soon
+
+# ─── FLATBUSH ZOMBIES ─────────────────────────────
+3001-a-laced-odyssey_flatbush-zombies = soon
+vacation-in-hell_flatbush-zombies = soon
+
+# ─── TAME IMPALA ──────────────────────────────────
+innerspeaker_tame-impala      = soon
+lonerism_tame-impala          = soon
+currents_tame-impala          = soon
+the-slow-rush_tame-impala     = soon
+
+# ─── ARCTIC MONKEYS ───────────────────────────────
+whatever-people-say-i-am-thats-what-im-not_arctic-monkeys = soon
+favourite-worst-nightmare_arctic-monkeys = soon
+humbug_arctic-monkeys         = soon
+suck-it-and-see_arctic-monkeys = soon
+am_arctic-monkeys             = soon
+tranquility-base-hotel-casino_arctic-monkeys = soon
+the-car_arctic-monkeys        = soon
+
+# ─── KID CUDI ─────────────────────────────────────
+man-on-the-moon-the-end-of-day_kid-cudi = soon
+man-on-the-moon-ii-the-legend-of-mr-rager_kid-cudi = soon
+indicud_kid-cudi              = soon
+satellite-flight_kid-cudi     = soon
+speedin-bullet-2-heaven_kid-cudi = soon
+passion-pain-demon-slayin_kid-cudi = soon
+man-on-the-moon-iii-the-chosen_kid-cudi = soon
+entergalactic_kid-cudi        = soon
+insano_kid-cudi               = soon
+insano-nitro-mega_kid-cudi    = soon
+
+# ─── DRAKE ────────────────────────────────────────
+thank-me-later_drake          = soon
+take-care_drake               = soon
+nothing-was-the-same_drake    = soon
+views_drake                   = soon
+scorpion_drake                = soon
+certified-lover-boy_drake     = soon
+honestly-nevermind_drake      = soon
+for-all-the-dogs_drake        = soon
+
+# ─── DRAKE & 21 SAVAGE ────────────────────────────
+her-loss_drake                = soon
+
+# ─── THE JET AGE OF TOMORROW ──────────────────────
+voyager_the-jet-age-of-tomorrow = soon
+journey-to-the-5th-echelon_the-jet-age-of-tomorrow = soon
+jellyfish-mentality_the-jet-age-of-tomorrow = soon
+
+# ─── SCANDAL ──────────────────────────────────────
+best-scandal_scandal          = ready
+temptation-box_scandal        = ready
+baby-action_scandal           = soon
+queens-are-trumps_scandal     = soon
+standard_scandal              = ready
+hello-world_scandal           = soon
+yellow_scandal                = soon
+honey_scandal                 = soon
+kiss-from-the-darkness_scandal = soon
+mirror_scandal                = soon
+luminary_scandal              = soon
+
+# ─── LIL UZI VERT & PLAYBOI CARTI ─────────────────
+16-29-collab                  = soon
+
+# ─── RHAP5ODY ─────────────────────────────────────
+maybe-maybe                   = ready
+syndicate                     = soon
+nuralistics                   = ready
+r5                            = soon
+phosephenes                   = ready
+the-world-pt1                 = soon
+theworldpt2                   = soon
+stnc                          = soon
+xxxxxxx                       = soon
+fred-not                      = soon
+thoth                         = ready
+jayda                         = soon
+
+# ─── JDIO ─────────────────────────────────────────
+sfsai                         = soon

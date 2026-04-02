@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ═══════════════════════════════════════
+   ROOT — DEFAULT THEME VARS
+   (overridden per-theme via JS applyTheme)
+═══════════════════════════════════════ */
+:root {
+  /* Surfaces */
+  --bg:       #0a0a0a;
+  --surface:  #111111;
+  --surface2: #1a1a1a;
+  --surface3: #222222;
+
+  /* Accents */
+  --accent:   #ff0000;
+  --accent2:  #00e5ff;
+
+  /* Text */
+  --text:     #f0f0f0;
+  --muted:    #666666;
+  --dim:      #999999;
+
+  /* Borders */
+  --border:   rgba(255, 255, 255, 0.07);
+
+  /* Layout (not theme-specific, but lives here for single source of truth) */
+  --sidebar-w:     240px;
+  --player-h:      88px;
+  --mobile-nav-h:  60px;
+
+  /* Medals */
+  --gold:   #FFD700;
+  --silver: #C0C0C0;
+  --bronze: #CD7F32;
+}
+
+/* ═══════════════════════════════════════
+   THEME PICKER CARDS
+═══════════════════════════════════════ */
+.theme-picker {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 4px 0 12px;
+}
+
+.theme-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: all .2s;
+  min-width: 76px;
+  font-family: 'Space Mono', monospace;
+}
+.theme-card:hover {
+  border-color: var(--accent2);
+  background: var(--surface3);
+}
+.theme-card.active {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, .2);
+}
+
+.theme-swatch {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.theme-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.theme-icon {
+  font-size: 11px;
+  color: var(--muted);
+}
+.theme-label {
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.theme-card.active .theme-label {
+  color: var(--accent2);
+}
+
+/* ═══════════════════════════════════════
+   CUSTOM COLOR PICKERS
+═══════════════════════════════════════ */
+.custom-colors-row {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0 4px;
+  flex-wrap: wrap;
+}
+.color-pick-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.color-pick {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 52px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: none;
+  cursor: pointer;
+  padding: 2px;
+}
+.color-pick::-webkit-color-swatch-wrapper { padding: 0; border-radius: 6px; }
+.color-pick::-webkit-color-swatch         { border: none; border-radius: 6px; }
+
+/* ═══════════════════════════════════════
+   TOGGLE SWITCH
+═══════════════════════════════════════ */
+.toggle-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.toggle-wrap input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.toggle-track {
+  width: 40px;
+  height: 22px;
+  background: var(--surface3);
+  border-radius: 11px;
+  position: relative;
+  transition: background .2s;
+  border: 1px solid var(--border);
+}
+.toggle-wrap input:checked + .toggle-track {
+  background: var(--accent2);
+}
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform .2s, background .2s;
+}
+.toggle-wrap input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(18px);
+  background: var(--bg);
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS SELECT
+═══════════════════════════════════════ */
+.settings-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.settings-select:focus {
+  border-color: var(--accent2);
+}
+
+/* ═══════════════════════════════════════
+   SETTINGS SUB-PANEL
+   (shown/hidden under bg mode selector)
+═══════════════════════════════════════ */
+.settings-sub-panel {
+  padding: 10px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
