@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ready.txt editor</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #080808;
+  --surface:  #0f0f0f;
+  --surface2: #161616;
+  --surface3: #1e1e1e;
+  --border:   rgba(255,255,255,0.07);
+  --text:     #f0f0f0;
+  --muted:    #555;
+  --dim:      #888;
+  --ready:    #00e05a;
+  --soon:     #444;
+  --accent:   #00e05a;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,.12) 2px,
+    rgba(0,0,0,.12) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: var(--text);
+  line-height: 1;
+}
+
+.header-sub {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── STATUS BAR ── */
+#statusBar {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 9px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+#statusBar .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+#statusBar .dot.green { background: var(--ready); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+#readyCount  { color: var(--ready); }
+#totalCount  { color: var(--dim); }
+
+/* ── TOOLBAR ── */
+#toolbar {
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  max-width: 320px;
+}
+.search-wrap input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 8px 12px 8px 32px;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color .2s;
+}
+.search-wrap input:focus { border-color: rgba(255,255,255,.2); }
+.search-wrap input::placeholder { color: var(--muted); }
+.search-wrap i {
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.filter-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.filter-btn:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+.filter-btn.active { background: var(--surface3); border-color: rgba(255,255,255,.2); color: var(--text); }
+
+.bulk-btns {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--dim);
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+
+.btn-ready {
+  background: rgba(0,224,90,.1);
+  border-color: rgba(0,224,90,.3);
+  color: var(--ready);
+}
+.btn-ready:hover { background: rgba(0,224,90,.18); border-color: rgba(0,224,90,.5); }
+
+.btn-export {
+  background: var(--ready);
+  border-color: var(--ready);
+  color: #000;
+  font-weight: 700;
+}
+.btn-export:hover { background: #00ff65; border-color: #00ff65; }
+
+/* ── MAIN GRID ── */
+main {
+  padding: 20px 28px 100px;
+}
+
+/* Artist group label */
+.artist-group {
+  margin-top: 28px;
+}
+.artist-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 2px;
+  color: var(--dim);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.album-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* ── ALBUM ROW ── */
+.album-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  transition: background .12s, border-color .12s;
+  cursor: default;
+}
+.album-row:hover {
+  background: var(--surface2);
+  border-color: var(--border);
+}
+.album-row.hidden-row { display: none; }
+
+.album-cover {
+  width: 44px;
+  height: 44px;
+  border-radius: 5px;
+  object-fit: cover;
+  background: var(--surface3);
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.album-cover.greyscale { filter: grayscale(1) brightness(.55); }
+
+.album-info {
+  flex: 1;
+  min-width: 0;
+}
+.album-title {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text);
+}
+.album-meta {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: .5px;
+}
+.album-id-chip {
+  font-size: 9px;
+  color: var(--muted);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-top: 3px;
+  display: inline-block;
+  letter-spacing: .5px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── TOGGLE PILL ── */
+.toggle-pill {
+  display: flex;
+  align-items: center;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+  height: 30px;
+  cursor: pointer;
+  transition: border-color .15s;
+  user-select: none;
+}
+.toggle-pill:hover { border-color: rgba(255,255,255,.18); }
+
+.pill-half {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 0 12px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: background .15s, color .15s;
+  color: var(--muted);
+}
+
+.toggle-pill[data-state="ready"] .pill-ready {
+  background: rgba(0,224,90,.18);
+  color: var(--ready);
+}
+.toggle-pill[data-state="soon"] .pill-soon {
+  background: var(--surface2);
+  color: var(--dim);
+}
+.toggle-pill[data-state="ready"] .pill-soon { color: #333; }
+.toggle-pill[data-state="soon"] .pill-ready { color: #333; }
+
+/* ── EMPTY STATE ── */
+#emptyState {
+  display: none;
+  text-align: center;
+  padding: 60px 0;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+/* ── FOOTER EXPORT BAR ── */
+#exportBar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 200;
+}
+.export-summary {
+  flex: 1;
+  font-size: 10px;
+  color: var(--dim);
+  letter-spacing: 1px;
+}
+.export-summary strong { color: var(--text); }
+
+/* ── LOAD OVERLAY ── */
+#loadOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 9000;
+  transition: opacity .3s;
+  padding: 32px;
+}
+#loadOverlay.fade-out { opacity: 0; pointer-events: none; }
+.load-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 4px;
+  color: var(--text);
+}
+.load-sub {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-top: -24px;
+}
+
+/* ── IMPORT STEPS ── */
+#importSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.import-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  transition: border-color .2s, opacity .2s;
+}
+.import-step.dim-step { opacity: .4; pointer-events: none; }
+.import-step.dim-step.unlocked { opacity: 1; pointer-events: auto; }
+
+.step-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--muted);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.step-body { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+.step-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.optional-tag {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-weight: 400;
+}
+
+.step-hint {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: .3px;
+  line-height: 1.5;
+}
+
+.import-drop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all .15s;
+  width: fit-content;
+}
+.import-drop-btn:hover { border-color: rgba(255,255,255,.2); color: var(--text); }
+.import-drop-btn.loaded {
+  border-color: rgba(0,224,90,.4);
+  color: var(--ready);
+  background: rgba(0,224,90,.06);
+}
+
+.step-status {
+  font-size: 10px;
+  color: var(--ready);
+  letter-spacing: .5px;
+  min-height: 14px;
+}
+.step-status.err { color: #e74c3c; }
+
+.import-go-btn {
+  background: var(--ready);
+  border: none;
+  color: #000;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 3px;
+  padding: 14px 48px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.import-go-btn:hover:not(:disabled) { background: #00ff65; transform: scale(1.02); }
+.import-go-btn:disabled { opacity: .3; cursor: not-allowed; transform: none; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  white-space: nowrap;
+  z-index: 8000;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Font Awesome fallback icons */
+.fa-search::before { content: '⌕'; }
+.fa-download::before { content: '↓'; }
+.fa-check-double::before { content: '✓✓'; }
+.fa-times::before { content: '✕'; }
+.fa-upload::before { content: '↑'; }
+</style>
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"/>
+</head>
+<body>
+
+<!-- LOAD OVERLAY — shown until data.js is imported -->
+<div id="loadOverlay">
+  <div class="load-title">READY EDITOR</div>
+  <div class="load-sub">album availability manager</div>
+
+  <div id="importSteps">
+
+    <!-- Step 1: data.js -->
+    <div class="import-step" id="step1">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <div class="step-label">Load data.js</div>
+        <div class="step-hint">Pick your data.js file — album IDs are read directly from it</div>
+        <label class="import-drop-btn" id="dataJsDropBtn">
+          <i class="fas fa-file-code"></i>
+          <span id="dataJsBtnLabel">Choose data.js</span>
+          <input type="file" id="dataJsInput" accept=".js" style="display:none;"/>
+        </label>
+        <div class="step-status" id="dataJsStatus"></div>
+      </div>
+    </div>
+
+    <!-- Step 2: ready.txt (optional) -->
+    <div class="import-step dim-step" id="step2">
+      <div class="step-num">02</div>
+      <div class="step-body">
+        <div class="step-label">Load ready.txt <span class="optional-tag">optional</span></div>
+        <div class="step-hint">Restore your last export — skipping leaves everything as SOON</div>
+        <label class="import-drop-btn" id="readyTxtDropBtn">
+          <i class="fas fa-file-alt"></i>
+          <span id="readyTxtBtnLabel">Choose ready.txt</span>
+          <input type="file" id="readyTxtInput" accept=".txt" style="display:none;"/>
+        </label>
+        <div class="step-status" id="readyTxtStatus"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="import-go-btn" id="importGoBtn" disabled onclick="bootFromImports()">
+    Open Editor →
+  </button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <h1>READY EDITOR</h1>
+    <span class="header-sub">ready.txt manager</span>
+  </div>
+  <div class="header-actions">
+    <label class="btn btn-ghost" title="Load a different ready.txt mid-session" style="cursor:pointer;">
+      <i class="fas fa-upload"></i> Re-load ready.txt
+      <input type="file" id="importInput" accept=".txt" style="display:none;"/>
+    </label>
+  </div>
+</header>
+
+<!-- STATUS BAR -->
+<div id="statusBar">
+  <div class="dot green" id="statusDot"></div>
+  <span><span id="readyCount">0</span> ready</span>
+  <span>·</span>
+  <span><span id="soonCount">0</span> soon</span>
+  <span>·</span>
+  <span><span id="totalCount">0</span> total albums</span>
+</div>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <div class="search-wrap">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search albums, artists, IDs…"/>
+  </div>
+
+  <div class="filter-btns">
+    <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" data-filter="ready" onclick="setFilter('ready',this)">Ready</button>
+    <button class="filter-btn" data-filter="soon" onclick="setFilter('soon',this)">Soon</button>
+  </div>
+
+  <div class="bulk-btns">
+    <button class="btn btn-ready" onclick="setAll('ready')"><i class="fas fa-check-double"></i> All Ready</button>
+    <button class="btn btn-ghost" onclick="setAll('soon')"><i class="fas fa-times"></i> All Soon</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+  <div id="emptyState">No albums match your search.</div>
+</main>
+
+<!-- EXPORT BAR -->
+<div id="exportBar">
+  <div class="export-summary" id="exportSummary">Loading…</div>
+  <button class="btn btn-export" onclick="exportReadyTxt()">
+    <i class="fas fa-download"></i> Export ready.txt
+  </button>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let _albums   = [];   // [{id, title, artist, year, cover, type}]
+let _states   = {};   // albumId → 'ready' | 'soon'
+let _filter   = 'all';
+let _search   = '';
+
+let _dataJsText    = null;   // raw text of data.js after file pick
+let _readyTxtText  = null;   // raw text of ready.txt after file pick (optional)
+
+// ══════════════════════════════════════════════════════
+//  STEP 1 — data.js file picker
+//  Reads the raw .js text, runs the album extractor,
+//  and unlocks step 2 + the Open button.
+// ══════════════════════════════════════════════════════
+document.getElementById('dataJsInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    _dataJsText = ev.target.result;
+    const parsed = parseDataJs(_dataJsText);
+
+    const btn    = document.getElementById('dataJsDropBtn');
+    const status = document.getElementById('dataJsStatus');
+
+    if (!parsed.length) {
+      status.textContent = '✕ No album IDs found — is this the right file?';
+      status.className   = 'step-status err';
+      btn.classList.remove('loaded');
+      document.getElementById('importGoBtn').disabled = true;
+      return;
+    }
+
+    _albums = parsed;
+    // Default all to soon
+    _albums.forEach(a => { _states[a.id] = 'soon'; });
+
+    btn.classList.add('loaded');
+    document.getElementById('dataJsBtnLabel').textContent = file.name;
+    status.textContent = `✓ ${parsed.length} albums found`;
+    status.className   = 'step-status';
+
+    // Unlock step 2 and the go button
+    document.getElementById('step2').classList.add('unlocked');
+    document.getElementById('importGoBtn').disabled = false;
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ══════════════════════════════════════════════════════
+//  STEP 2 — ready.txt file picker (optional)
+// ══════════════════════════════════════════════════════
+document.getElementById('readyTxtInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    _readyTxtText = ev.target.result;
+
+    const btn    = document.getElementById('readyTxtDropBtn');
+    const status = document.getElementById('readyTxtStatus');
+
+    const count = applyReadyTxtText(_readyTxtText);
+    btn.classList.add('loaded');
+    document.getElementById('readyTxtBtnLabel').textContent = file.name;
+    status.textContent = `✓ ${count} states loaded`;
+    status.className   = 'step-status';
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ══════════════════════════════════════════════════════
+//  OPEN EDITOR
+// ══════════════════════════════════════════════════════
+function bootFromImports() {
+  buildUI();
+  updateCounts();
+  updateExportSummary();
+
+  const ov = document.getElementById('loadOverlay');
+  ov.classList.add('fade-out');
+  setTimeout(() => ov.remove(), 350);
+}
+
+// ══════════════════════════════════════════════════════
+//  DATA.JS PARSER
+//  Reads raw JS text, extracts each album object by
+//  scanning for the fields we care about: id, title,
+//  artist, year, cover, type.
+//  Uses a per-object text slicer — no eval, no import.
+// ══════════════════════════════════════════════════════
+function parseDataJs(text) {
+  const albums = [];
+
+  // Find every object block that contains an `id:` field.
+  // Strategy: split on top-level `{` boundaries by scanning depth.
+  const blocks = extractTopLevelObjects(text);
+
+  blocks.forEach(block => {
+    const id    = extractField(block, 'id');
+    if (!id) return;  // skip non-album objects
+
+    const title  = extractField(block, 'title')  || id;
+    const artist = extractField(block, 'artist')  || extractField(block, 'primaryArtist') || '';
+    const year   = extractField(block, 'year')    || '';
+    const cover  = extractField(block, 'cover')   || '';
+    const type   = extractField(block, 'type')    || '';
+
+    albums.push({ id, title, artist, year, cover, type });
+  });
+
+  return albums;
+}
+
+// Split the JS source into top-level { } blocks (the album objects inside ALBUMS = [...])
+function extractTopLevelObjects(text) {
+  // Find the ALBUMS array body
+  const arrStart = text.indexOf('[');
+  const arrEnd   = text.lastIndexOf(']');
+  if (arrStart === -1 || arrEnd === -1) return [];
+
+  const body   = text.slice(arrStart + 1, arrEnd);
+  const blocks = [];
+  let depth = 0, start = -1;
+
+  for (let i = 0; i < body.length; i++) {
+    const ch = body[i];
+    if (ch === '{') {
+      if (depth === 0) start = i;
+      depth++;
+    } else if (ch === '}') {
+      depth--;
+      if (depth === 0 && start !== -1) {
+        blocks.push(body.slice(start, i + 1));
+        start = -1;
+      }
+    }
+  }
+
+  return blocks;
+}
+
+// Extract the string value of a named field from a JS object literal snippet.
+// Handles:  field: "value"  |  field: 'value'  |  "field": "value"
+function extractField(block, field) {
+  // Match:  field   :   "value"  or  'value'
+  const re = new RegExp(
+    `(?:"|')?${field}(?:"|')?\\s*:\\s*(?:"((?:[^"\\\\]|\\\\.)*)"|'((?:[^'\\\\]|\\\\.)*)')`,
+    'i'
+  );
+  const m = block.match(re);
+  if (!m) return '';
+  // Unescape basic sequences
+  return (m[1] !== undefined ? m[1] : m[2] || '').replace(/\\n/g,' ').replace(/\\'/g,"'").replace(/\\"/g,'"').trim();
+}
+
+// ══════════════════════════════════════════════════════
+//  READY.TXT PARSER  — returns number of states applied
+// ══════════════════════════════════════════════════════
+function applyReadyTxtText(text) {
+  let count = 0;
+  text.split('\n').forEach(raw => {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) return;
+    const eqIdx = line.indexOf('=');
+    if (eqIdx === -1) return;
+    const id  = line.slice(0, eqIdx).trim().toLowerCase();
+    const val = line.slice(eqIdx + 1).trim().toLowerCase();
+    if (!id) return;
+    if (id in _states) {
+      _states[id] = val === 'ready' ? 'ready' : 'soon';
+      count++;
+    }
+  });
+  return count;
+}
+
+// ══════════════════════════════════════════════════════
+//  BUILD UI
+// ══════════════════════════════════════════════════════
+function buildUI() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  if (!_albums.length) {
+    main.innerHTML = `<div style="text-align:center;padding:80px 0;color:var(--muted);font-size:11px;letter-spacing:1px;">
+      Could not load data.js — make sure this file is in the same directory.
+    </div>`;
+    return;
+  }
+
+  // Group by artist
+  const groups = {};
+  _albums.forEach(a => {
+    const artist = a.primaryArtist || a.artist || 'Unknown';
+    if (!groups[artist]) groups[artist] = [];
+    groups[artist].push(a);
+  });
+
+  Object.entries(groups).forEach(([artist, albums]) => {
+    const group = document.createElement('div');
+    group.className = 'artist-group';
+    group.dataset.artist = artist.toLowerCase();
+
+    group.innerHTML = `<div class="artist-label">${artist}</div><div class="album-list" id="list_${CSS.escape(artist)}"></div>`;
+    main.appendChild(group);
+
+    const list = group.querySelector('.album-list');
+    albums.forEach(album => list.appendChild(makeRow(album)));
+  });
+
+  // Wire search
+  document.getElementById('searchInput').addEventListener('input', e => {
+    _search = e.target.value.toLowerCase().trim();
+    applyFilters();
+  });
+}
+
+function makeRow(album) {
+  const row = document.createElement('div');
+  row.className = 'album-row';
+  row.dataset.id     = album.id;
+  row.dataset.title  = (album.title  || '').toLowerCase();
+  row.dataset.artist = (album.primaryArtist || album.artist || '').toLowerCase();
+  row.dataset.type   = album.type || '';
+
+  const state = _states[album.id] || 'soon';
+  const isReady = state === 'ready';
+
+  row.innerHTML = `
+    <img class="album-cover ${isReady ? '' : 'greyscale'}" src="${album.cover || ''}"
+         onerror="this.style.background='#1e1e1e';this.removeAttribute('src')"/>
+    <div class="album-info">
+      <div class="album-title">${album.title || '(untitled)'}</div>
+      <div class="album-meta">${album.primaryArtist || album.artist || ''} · ${album.year || '—'} · ${album.type || ''}</div>
+      <span class="album-id-chip">${album.id}</span>
+    </div>
+    <div class="toggle-pill" data-state="${state}" data-id="${album.id}" onclick="toggleAlbum('${album.id}',this)">
+      <div class="pill-half pill-ready">READY</div>
+      <div class="pill-half pill-soon">SOON</div>
+    </div>`;
+
+  return row;
+}
+
+// ══════════════════════════════════════════════════════
+//  TOGGLE
+// ══════════════════════════════════════════════════════
+function toggleAlbum(albumId, pillEl) {
+  const current = _states[albumId] || 'soon';
+  const next    = current === 'ready' ? 'soon' : 'ready';
+  _states[albumId] = next;
+
+  // Update pill
+  pillEl.dataset.state = next;
+
+  // Update cover greyscale
+  const row = pillEl.closest('.album-row');
+  const img = row.querySelector('.album-cover');
+  if (img) img.classList.toggle('greyscale', next !== 'ready');
+
+  updateCounts();
+  updateExportSummary();
+  applyFilters();
+}
+
+function setAll(state) {
+  // Only apply to currently visible rows
+  document.querySelectorAll('.album-row:not(.hidden-row)').forEach(row => {
+    const id   = row.dataset.id;
+    if (!id) return;
+    _states[id] = state;
+    const pill = row.querySelector('.toggle-pill');
+    if (pill) pill.dataset.state = state;
+    const img = row.querySelector('.album-cover');
+    if (img) img.classList.toggle('greyscale', state !== 'ready');
+  });
+  updateCounts();
+  updateExportSummary();
+  showToast(state === 'ready' ? '✓ All visible set to READY' : '✕ All visible set to SOON');
+}
+
+// ══════════════════════════════════════════════════════
+//  FILTER + SEARCH
+// ══════════════════════════════════════════════════════
+function setFilter(f, btn) {
+  _filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  let visibleCount = 0;
+
+  document.querySelectorAll('.album-row').forEach(row => {
+    const id     = row.dataset.id;
+    const state  = _states[id] || 'soon';
+    const title  = row.dataset.title  || '';
+    const artist = row.dataset.artist || '';
+    const idStr  = id ? id.toLowerCase() : '';
+
+    const matchSearch = !_search ||
+      title.includes(_search) ||
+      artist.includes(_search) ||
+      idStr.includes(_search);
+
+    const matchFilter = _filter === 'all' ||
+      (_filter === 'ready' && state === 'ready') ||
+      (_filter === 'soon'  && state === 'soon');
+
+    const show = matchSearch && matchFilter;
+    row.classList.toggle('hidden-row', !show);
+    if (show) visibleCount++;
+  });
+
+  // Hide empty artist groups
+  document.querySelectorAll('.artist-group').forEach(group => {
+    const anyVisible = group.querySelectorAll('.album-row:not(.hidden-row)').length > 0;
+    group.style.display = anyVisible ? '' : 'none';
+  });
+
+  // Empty state
+  const empty = document.getElementById('emptyState');
+  if (empty) empty.style.display = visibleCount === 0 ? 'block' : 'none';
+}
+
+// ══════════════════════════════════════════════════════
+//  COUNTS
+// ══════════════════════════════════════════════════════
+function updateCounts() {
+  const readyN = Object.values(_states).filter(v => v === 'ready').length;
+  const soonN  = Object.values(_states).filter(v => v === 'soon').length;
+  document.getElementById('readyCount').textContent = readyN;
+  document.getElementById('soonCount').textContent  = soonN;
+  document.getElementById('totalCount').textContent = _albums.length;
+
+  const dot = document.getElementById('statusDot');
+  dot.className = 'dot ' + (readyN > 0 ? 'green' : '');
+}
+
+function updateExportSummary() {
+  const readyIds = Object.entries(_states).filter(([,v]) => v === 'ready').map(([k]) => k);
+  const s = document.getElementById('exportSummary');
+  if (s) s.innerHTML = `<strong>${readyIds.length}</strong> albums marked ready · will write <strong>ready.txt</strong>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT
+// ══════════════════════════════════════════════════════
+function exportReadyTxt() {
+  const now = new Date().toISOString().slice(0,16).replace('T',' ');
+
+  // Group output by artist for readability
+  const artistMap = {};
+  _albums.forEach(a => {
+    const artist = a.primaryArtist || a.artist || 'Unknown';
+    if (!artistMap[artist]) artistMap[artist] = [];
+    artistMap[artist].push(a);
+  });
+
+  const lines = [];
+  lines.push('# ══════════════════════════════════════════════════════');
+  lines.push('#  READY.TXT — Album Availability Control');
+  lines.push(`#  Exported: ${now}`);
+  lines.push('#');
+  lines.push('#  FORMAT:  album-id = ready | unready');
+  lines.push('#  Any album NOT listed defaults to → unready');
+  lines.push('# ══════════════════════════════════════════════════════');
+  lines.push('');
+
+  Object.entries(artistMap).forEach(([artist, albums]) => {
+    lines.push(`# ─── ${artist.toUpperCase()} ${'─'.repeat(Math.max(0, 45 - artist.length))}`);
+    albums.forEach(a => {
+      const state = _states[a.id] || 'soon';
+      const pad = ' '.repeat(Math.max(1, 30 - a.id.length));
+      lines.push(`${a.id}${pad}= ${state}`);
+    });
+    lines.push('');
+  });
+
+  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  const anchor = document.createElement('a');
+  anchor.href = URL.createObjectURL(blob);
+  anchor.download = 'ready.txt';
+  anchor.click();
+  URL.revokeObjectURL(anchor.href);
+
+  showToast('✓ Exported ready.txt');
+}
+
+// ══════════════════════════════════════════════════════
+//  IMPORT
+// ══════════════════════════════════════════════════════
+document.getElementById('importInput').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const count = applyReadyTxtText(ev.target.result);
+    // Refresh all pills and cover images
+    document.querySelectorAll('.album-row').forEach(row => {
+      const id    = row.dataset.id;
+      const state = _states[id] || 'soon';
+      const pill  = row.querySelector('.toggle-pill');
+      if (pill) pill.dataset.state = state;
+      const img = row.querySelector('.album-cover');
+      if (img) img.classList.toggle('greyscale', state !== 'ready');
+    });
+    updateCounts();
+    updateExportSummary();
+    applyFilters();
+    showToast(`✓ Loaded ${file.name} — ${count} states applied`);
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ══════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════
+let _toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<script src="pageSet.js"></script>
+<title>${broadPage} | ${specificArea}</title> <!-- probably find a way to hide this before its ready xd -->
+  <link rel="icon" type="image/png" href="${awesomeSoundFavicon}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"/>
+  <link rel="stylesheet" href="themium.css">
+  <link rel="stylesheet" href="stylium.css">
+  <link rel="stylesheet" href="playerExpandedStyles.css">
+  <link rel="stylesheet" href="playerExpanded.css">
+</head>
+<!-- MOBILE DETECTOR -->
+<script>
+  if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768) {
+    document.documentElement.classList.add('is-mobile');
+  }
+  window.addEventListener('resize', () => {
+    document.documentElement.classList.toggle('is-mobile', window.innerWidth <= 768);
+  });
+</script>
+<body>
+
+<div class="app" id="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo-row">
+    <div class="sidebar-logo"><img style="width:100%;height:100%;" src="${awesomeSoundLogo}"/></div>
+  </div>
+  <div class="sidebar-nav">
+    <button class="nav-btn" id="navSearch" onclick="showView('search')"><i class="fas fa-search"></i>Search</button>
+    <button class="nav-btn active" id="navHome" onclick="showView('home')"><i class="fas fa-home"></i>Home</button>
+    <button class="nav-btn" id="navDiscover" onclick="showView('discover')"><i class="fas fa-compass"></i>Discover</button>
+    <button class="nav-btn" id="navSettings" onclick="showView('settings')"><i class="fas fa-cog"></i>Settings</button>
+  </div>
+  <div class="sidebar-section-label">
+    <span>Library</span>
+    <button onclick="openCreatePlaylist()" title="New playlist"><i class="fas fa-plus"></i></button>
+  </div>
+  <div class="sidebar-list" id="sidebarLibrary"></div>
+  <div style="padding:0 8px 10px;">
+    <button class="create-playlist-btn" onclick="openCreatePlaylist()"><i class="fas fa-plus"></i>New Playlist</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <button class="topbar-back" id="btnBack" onclick="navBack()"><i class="fas fa-chevron-left"></i></button>
+    <button class="topbar-fwd" id="btnFwd" onclick="navFwd()"><i class="fas fa-chevron-right"></i></button>
+    <div class="search-wrap">
+      <i class="fas fa-search"></i>
+      <input type="search" id="globalSearch" placeholder="Search albums, artists, tracks, users..." autocomplete="off" data-lpignore="true" data-form-type="other" readonly/>
+    </div>
+    <div class="topbar-right" id="topbarRight"></div>
+  </div>
+
+  <!-- HOME VIEW -->
+  <div class="view active" id="viewHome">
+    <div class="discovery-hero">
+      <h1>HOME</h1>
+      <p>Welcome back. Pick up where you left off.</p>
+    </div>
+
+    <!-- Featured Artists -->
+    <div class="section-title"><div class="section-title-left">Featured Artists</div></div>
+    <div style="display:flex;gap:16px;padding:0 24px 20px;overflow-x:auto;flex-shrink:0;">
+      <div id="homeFeaturedArtists" style="display:flex;gap:16px;"></div>
+    </div>
+
+    <!-- Last Played — JS builds section titles + album-grid per type inside here -->
+    <div id="homeLastPlayedSection" style="display:none;"></div>
+
+    <!-- Recommended Albums -->
+    <div class="section-title">
+      <div class="section-title-left">Recommended For You
+        <button class="see-all-btn" onclick="openFullList('released')" style="margin-left:8px;">More</button>
+      </div>
+      <button class="see-all-btn" onclick="openFullList('released')">See All</button>
+    </div>
+    <div class="album-grid" id="gridHomeRecommended"></div>
+
+    <!-- Recommended Singles -->
+    <div id="homeRecommendedSinglesSection" style="display:none;">
+      <div class="section-title">
+        <div class="section-title-left">Singles</div>
+      </div>
+      <div class="album-grid" id="gridHomeSingles"></div>
+    </div>
+
+    <!-- Unreleased picks -->
+    <div class="section-title">
+      <div class="section-title-left">Unreleased Picks
+        <button class="see-all-btn" onclick="openFullList('unreleased')" style="margin-left:8px;">holy grails!</button>
+      </div>
+      <button class="see-all-btn" onclick="openFullList('unreleased')">See All</button>
+    </div>
+    <div class="album-grid" id="gridHomeUnreleased"></div>
+  </div>
+
+  <!-- ALL ALBUMS VIEW -->
+  <div class="view" id="viewFullAllAlbums">
+    <div class="view-header">
+      <div class="section-title-left">
+        Recently Added
+        <span style="font-size:14px;color:var(--muted);font-family:'Space Mono',monospace;margin-left:6px;" id="fullAllAlbumsDesc"></span>
+      </div>
+    </div>
+    <div class="album-grid" id="gridFullAllAlbums"></div>
+  </div>
+
+  <!-- DISCOVER VIEW -->
+  <div class="view" id="viewDiscover">
+    <div class="discovery-hero">
+      <h1>DISCOVERY</h1>
+      <p>Find the Best Music available! <br>adding more albums soon! recommend an album at
+        <button class="see-all-btn" onclick="window.open('https://padlet.com/rhap5ody/albums_recommendations', '_blank')" style="margin-left:8px;">Recommendations</button>
+      </p>
+    </div>
+    <div class="podium-section">
+      <div class="podium-title"><i class="fas fa-trophy"></i>BEST</div>
+      <div class="podium-row" id="podiumRow">
+        <div class="podium-loading"><span class="stats-dot"></span>Loading live stats…</div>
+      </div>
+    </div>
+    <div class="section-title">
+      <div class="section-title-left">Top #100</div>
+      <button class="see-all-btn" onclick="openFullStats()"><i class="fas fa-expand-alt"></i> Full Stats</button>
+    </div>
+    <div class="top100-section">
+      <div class="top100-grid" id="top100Grid">
+        <div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--muted);font-family:'Space Mono',monospace;font-size:12px;"><span class="stats-dot"></span>Loading stats…</div>
+      </div>
+    </div>
+    <div class="section-title">
+      <div class="section-title-left">
+        Albums
+        <!--<span style="font-size:14px;color:var(--muted);font-family:'Space Mono',monospace;margin-left:6px;" id="releasedCountSpan">(loading…)</span>-->
+        <button class="see-all-btn" onclick="openFullList('released')" style="margin-left:8px;">More</button>
+      </div>
+    </div>
+    <div class="album-grid" id="gridOfficial"></div>
+    <div class="section-title">
+      <div class="section-title-left">
+        Unreleased / Shelved Albums
+        <!--<span style="font-size:14px;color:var(--muted);font-family:'Space Mono',monospace;margin-left:6px;" id="unreleasedCountSpan">(loading…)</span>-->
+        <button class="see-all-btn" onclick="openFullList('unreleased')" style="margin-left:8px;">More</button>
+      </div>
+    </div>
+    <div class="album-grid" id="gridUnreleased"></div>
+  </div>
+
+  <!-- FULL LIST: RELEASED -->
+  <div class="view" id="viewFullReleased">
+    <div class="full-list-hero">
+      <h1>ALL RELEASED ALBUMS</h1>
+      <p id="fullReleasedDesc">All official releases</p>
+    </div>
+    <div class="album-grid" id="gridFullReleased"></div>
+  </div>
+
+  <!-- FULL LIST: UNRELEASED -->
+  <div class="view" id="viewFullUnreleased">
+    <div class="full-list-hero">
+      <h1>ALL UNRELEASED / SHELVED</h1>
+      <p id="fullUnreleasedDesc">Shelved and unreleased projects</p>
+    </div>
+    <div class="album-grid" id="gridFullUnreleased"></div>
+  </div>
+
+  <!-- FULL LIST: REL/UNREL -->
+  <div class="view" id="viewFullAlbums">
+    <div class="full-list-hero">
+      <h1>ALL ALBUMS</h1>
+      <p>All released and shelved projects</p>
+    </div>
+    <div class="album-grid" id="gridFullReleased"></div>
+    <div class="album-grid" id="gridFullUnreleased"></div>
+  </div>
+
+  <!-- ALBUM VIEW -->
+  <div class="view" id="viewAlbum">
+    <div class="album-hero" id="albumHero"></div>
+    <div class="tracklist-wrap">
+      <div class="tracklist-header">
+        <span>#</span><span>TITLE</span><span style="text-align:right">DURATION</span><span></span>
+      </div>
+      <div id="albumTrackRows"></div>
+    </div>
+  </div>
+
+  <!-- ARTIST VIEW -->
+  <div class="view" id="viewArtist">
+    <div id="artistHero"></div>
+    <div id="artistAlbums"></div>
+  </div>
+
+  <!-- SEARCH RESULTS VIEW -->
+  <div class="view" id="viewSearch">
+    <div id="searchHero" style="display:flex;flex-direction:column;align-items:center;padding:40px 24px 24px;gap:18px;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;opacity:.7;">Search</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;" id="searchTypeFilter">
+        <button class="search-type-btn active" data-type="all" onclick="_setSearchType('all')">All</button>
+        <button class="search-type-btn" data-type="albums" onclick="_setSearchType('albums')">Albums</button>
+        <button class="search-type-btn" data-type="singles" onclick="_setSearchType('singles')">Singles</button>
+        <button class="search-type-btn" data-type="artists" onclick="_setSearchType('artists')">Artists</button>
+        <button class="search-type-btn" data-type="tracks" onclick="_setSearchType('tracks')">Tracks</button>
+        <button class="search-type-btn" data-type="users" onclick="_setSearchType('users')">Users</button>
+      </div>
+    </div>
+    <div class="search-results" id="searchResults">
+      <div class="empty-state"><i class="fas fa-search"></i>Type to search albums, artists, tracks, users</div>
+    </div>
+  </div>
+
+  <!-- PROFILE (own) VIEW -->
+  <div class="view" id="viewProfile">
+    <div id="profileContent"></div>
+  </div>
+
+  <!-- OTHER USER VIEW -->
+  <div class="view" id="viewUser">
+    <div id="userContent"></div>
+  </div>
+
+  <!-- PLAYLIST VIEW -->
+  <div class="view" id="viewPlaylist">
+    <div class="playlist-hero" id="playlistHero"></div>
+    <div style="padding:0 16px 8px;display:flex;align-items:center;justify-content:space-between;">
+      <div id="playlistActionRow" style="display:flex;gap:10px;align-items:center;"></div>
+      <button class="btn btn-secondary" onclick="openPlaylistEditor(currentPlaylistId)" style="font-size:11px;padding:6px 14px;"><i class="fas fa-sliders-h"></i> Edit</button>
+    </div>
+    <div style="padding:0 16px 20px;">
+      <div style="display:grid;grid-template-columns:36px 42px 1fr 100px 40px;padding:6px 12px;border-bottom:1px solid var(--border);margin-bottom:4px;">
+        <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;">#</span>
+        <span></span>
+        <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;">TITLE</span>
+        <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;text-align:right;">DURATION</span>
+        <span></span>
+      </div>
+      <div id="playlistTrackRows"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS VIEW — populated by renderSettingsHTML() in settings.js, called from init.js -->
+  <div class="view" id="viewSettings"></div>
+
+</main>
+
+<!-- PLAYER BAR -->
+<div class="player-bar hidden" id="playerBar">
+  <div class="now-info">
+    <img class="now-art hidden" id="nowArt" src="" alt=""/>
+    <div class="now-text">
+      <div class="now-title" id="nowTitle">—</div>
+      <div class="now-artist" id="nowArtist">—</div>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="ctrl-btns">
+      <button class="ctrl-btn" id="btnRandom" title="Shuffle" onclick="toggleShuffle()"><i class="fas fa-random"></i></button>
+      <button class="ctrl-btn" id="btnPrev" onclick="prevTrack()"><i class="fas fa-step-backward"></i></button>
+      <button class="ctrl-btn ctrl-play" id="btnPlay" onclick="togglePlay()"><i class="fas fa-play" id="playIcon"></i></button>
+      <button class="ctrl-btn" id="btnNext" onclick="nextTrack()"><i class="fas fa-step-forward"></i></button>
+      <button class="ctrl-btn" id="btnRepeat" title="Repeat" onclick="cycleRepeat()"><i class="fas fa-redo" id="repeatIcon"></i></button>
+    </div>
+    <div class="progress-row">
+      <span class="time-label" id="currTime">0:00</span>
+      <div class="seek-wrap"><div class="seek-fill" id="seekFill"></div><input type="range" class="seek-input" id="seekSlider" min="0" max="100" value="0" step="0.1"/></div>
+      <span class="time-label" id="totalTime">0:00</span>
+    </div>
+  </div>
+  <div class="right-ctrl">
+    <div class="wave-viz" id="waveViz">
+      <span class="stroke"></span><span class="stroke"></span><span class="stroke"></span>
+      <span class="stroke"></span><span class="stroke"></span><span class="stroke"></span><span class="stroke"></span>
+    </div>
+    <div class="vol-wrap">
+      <i class="fas fa-volume-down"></i>
+      <div class="vol-slider"><div class="vol-fill" id="volFill"></div><input type="range" class="vol-input" id="volSlider" min="0" max="300" value="100"/></div>
+      <i class="fas fa-volume-up"></i>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<!-- FULL STATS OVERLAY -->
+<div class="fullstats-overlay" id="fullStatsOverlay">
+  <div class="fullstats-inner">
+    <div class="fullstats-header">
+      <div class="fullstats-title">FULL STATS</div>
+      <button class="fullstats-close" onclick="closeFullStats()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="fullstats-tabs">
+      <button class="fstab active" onclick="switchFSTab('best')">Best Score</button>
+      <button class="fstab" onclick="switchFSTab('views')">Views</button>
+      <button class="fstab" onclick="switchFSTab('listens')">Listens</button>
+      <button class="fstab" onclick="switchFSTab('saves')">Saves</button>
+      <button class="fstab" onclick="switchFSTab('downloads')">Downloads</button>
+    </div>
+    <div class="fullstats-body" id="fullStatsBody"></div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalAuth">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalAuth')"><i class="fas fa-times"></i></button>
+    <div class="tabs">
+      <button class="tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="tab" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+    <div id="authLogin">
+      <div class="modal-title">WELCOME BACK</div>
+      <div class="modal-sub">Sign in with username or #ID</div>
+      <div class="form-group">
+        <label class="form-label">Username or #ID</label>
+        <input class="form-input" id="loginUser" placeholder="@username or #WHAb90l2" autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" id="loginPass" type="password" placeholder="••••••••" autocomplete="off"/>
+        <div class="form-error" id="loginError">Invalid username/ID or password</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
+      </div>
+    </div>
+    <div id="authRegister" style="display:none;">
+      <div class="modal-title">CREATE ACCOUNT</div>
+      <div class="modal-sub">No email or payment info needed</div>
+      <div class="form-group">
+        <label class="form-label">Username <span style="color:var(--accent);">*</span></label>
+        <input class="form-input" id="regUser" placeholder="lowercase, no spaces" autocomplete="off"/>
+        <div class="form-hint">3–20 chars, letters/numbers/underscores only</div>
+        <div class="form-error" id="regUserError"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Display Name</label>
+        <input class="form-input" id="regDisplay" placeholder="How you appear to others" autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password <span style="color:var(--accent);">*</span></label>
+        <input class="form-input" id="regPass" type="password" placeholder="••••••••" autocomplete="off"/>
+        <div class="form-hint">At least 6 characters</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Recovery Answer <span style="color:var(--accent);">*</span></label>
+        <input class="form-input" id="regFallback" placeholder="e.g. name of your first pet" autocomplete="off"/>
+        <div class="form-hint">Remember this — it's your only recovery option</div>
+        <div class="form-error" id="regError"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="doRegister()">Create Account</button>
+      </div>
+    </div>
+    <div id="authSuccess" style="display:none;text-align:center;">
+      <div class="modal-title">ACCOUNT CREATED</div>
+      <div class="modal-sub">Your unique ID:</div>
+      <div class="id-badge" id="newIdBadge"></div>
+      <p style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Save this ID — you can use it to sign in</p>
+      <div class="modal-actions" style="justify-content:center;margin-top:16px;">
+        <button class="btn btn-primary" onclick="closeModal('modalAuth')">Start Listening</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalEditProfile">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalEditProfile')"><i class="fas fa-times"></i></button>
+    <div class="modal-title">EDIT PROFILE</div>
+    <div class="form-group">
+      <label class="form-label">Display Name</label>
+      <input class="form-input" id="editDisplayName" placeholder="How you appear to others"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Profile Picture URL</label>
+      <input class="form-input" id="editPfpUrl" placeholder="https://..."/>
+      <div class="form-hint">Link to an image URL</div>
+    </div>
+    <div class="modal-divider"></div>
+    <div class="modal-title" style="font-size:20px;">CHANGE PASSWORD</div>
+    <div class="form-group">
+      <label class="form-label">Current Password</label>
+      <input class="form-input" id="editOldPass" type="password" placeholder="••••••••"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input class="form-input" id="editNewPass" type="password" placeholder="••••••••"/>
+      <div class="form-error" id="editPassError"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalEditProfile')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProfileEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalCreatePlaylist">
+  <div class="modal" style="max-width:360px;">
+    <button class="modal-close" onclick="closeModal('modalCreatePlaylist')"><i class="fas fa-times"></i></button>
+    <div class="modal-title">NEW PLAYLIST</div>
+    <div class="form-group">
+      <label class="form-label">Playlist Name</label>
+      <input class="form-input" id="newPlaylistName" placeholder="My Playlist"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description (optional)</label>
+      <input class="form-input" id="newPlaylistDesc" placeholder="What's this playlist about?"/>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modalCreatePlaylist')">Cancel</button>
+      <button class="btn btn-primary" onclick="doCreatePlaylist()">Create</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalAddToPlaylist">
+  <div class="modal" style="max-width:360px;">
+    <button class="modal-close" onclick="closeModal('modalAddToPlaylist')"><i class="fas fa-times"></i></button>
+    <div class="modal-title">ADD TO PLAYLIST</div>
+    <div class="modal-sub" id="addToPlaylistTrackName" style="margin-bottom:12px;"></div>
+    <div id="addToPlaylistList"></div>
+    <div class="modal-divider"></div>
+    <button class="create-playlist-btn" onclick="openCreatePlaylistFromAdd()"><i class="fas fa-plus"></i> New Playlist</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalPlaylistEditor">
+  <div class="modal" style="max-width:500px;">
+    <button class="modal-close" onclick="closeModal('modalPlaylistEditor')"><i class="fas fa-times"></i></button>
+    <div class="modal-title">PLAYLIST EDITOR</div>
+    <div class="modal-sub" id="editorPlaylistName"></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" style="font-size:11px;" onclick="editorRemoveAll()"><i class="fas fa-trash"></i> Clear All</button>
+      <button class="btn btn-secondary" style="font-size:11px;" id="editorRemoveArtistBtn"><i class="fas fa-user-minus"></i> Remove Artist</button>
+      <button class="btn btn-secondary" style="font-size:11px;" id="editorRemoveAlbumBtn"><i class="fas fa-compact-disc"></i> Remove Album</button>
+    </div>
+    <div id="editorTrackList" style="max-height:360px;overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="closeModal('modalPlaylistEditor');renderPlaylistView(currentPlaylistId);">Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalRemoveGroup">
+  <div class="modal" style="max-width:360px;">
+    <button class="modal-close" onclick="closeModal('modalRemoveGroup')"><i class="fas fa-times"></i></button>
+    <div class="modal-title" id="removeGroupTitle">REMOVE</div>
+    <div id="removeGroupList" style="max-height:300px;overflow-y:auto;"></div>
+  </div>
+</div>
+
+<div class="ctx-menu" id="ctxMenu"></div>
+<div class="toast" id="toast"></div>
+
+<!-- DOWNLOAD PROGRESS BAR -->
+<div id="dlProgressBar" class="dl-progress-bar" style="display:none;" aria-live="polite">
+  <div class="dl-progress-inner">
+    <i class="fas fa-download dl-progress-icon"></i>
+    <div class="dl-progress-text-wrap">
+      <span class="dl-progress-label" id="dlProgressLabel">Downloading...</span>
+      <span class="dl-progress-count" id="dlProgressCount"></span>
+    </div>
+    <div class="dl-progress-track">
+      <div class="dl-progress-fill" id="dlProgressFill"></div>
+    </div>
+    <button class="dl-progress-cancel" id="dlProgressCancel" title="Cancel download" onclick="cancelDownload()">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+</div>
+
+<!-- DOWNLOAD RETRY OVERLAY -->
+<div id="dlRetryOverlay" class="dl-retry-overlay" style="display:none;">
+  <div class="dl-retry-card">
+    <i class="fas fa-exclamation-circle dl-retry-icon"></i>
+    <div class="dl-retry-title">Download interrupted</div>
+    <div class="dl-retry-msg" id="dlRetryMsg">The page was reloaded before the download completed.</div>
+    <div class="dl-retry-actions">
+      <button class="dl-retry-btn dl-retry-yes" id="dlRetryYes">Try again</button>
+      <button class="dl-retry-btn dl-retry-no" onclick="dismissRetryOverlay()">No thanks</button>
+    </div>
+  </div>
+</div>
+
+<!-- COVER ART LIGHTBOX -->
+<div id="coverArtLightbox" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:0;animation:fadeInOverlayCA .18s ease;">
+  <div id="coverArtCard" style="display:flex;flex-direction:column;align-items:center;gap:0;max-width:420px;width:90vw;animation:scaleInCardCA .2s cubic-bezier(.34,1.56,.64,1);position:relative;">
+    <!-- Close -->
+    <button onclick="closeCoverArtLightbox()" style="position:absolute;top:-14px;right:-14px;z-index:2;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:18px;cursor:pointer;line-height:1;padding:6px 9px;border-radius:50%;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.15)'" onmouseout="this.style.background='rgba(0,0,0,.6)'">✕</button>
+    <!-- Album Title -->
+    <div id="coverArtTitle" style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;text-align:center;color:#fff;margin-bottom:12px;text-shadow:0 2px 8px rgba(0,0,0,.7);"></div>
+    <!-- Cover Image -->
+    <div style="width:100%;border-radius:12px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.8);position:relative;">
+      <img id="coverArtImg" src="" alt="" style="width:100%;height:auto;display:block;"/>
+    </div>
+    <!-- Artist Row -->
+    <div id="coverArtArtistRow" style="display:flex;align-items:center;gap:12px;margin-top:16px;cursor:pointer;padding:10px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:40px;transition:background .15s;width:100%;box-sizing:border-box;justify-content:center;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+      <img id="coverArtArtistPfp" src="" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.2);flex-shrink:0;"/>
+      <div id="coverArtArtistName" style="font-family:'Space Mono',monospace;font-size:13px;color:#fff;font-weight:600;"></div>
+    </div>
+    <!-- Download Button -->
+    <button id="coverArtDownloadBtn" onclick="downloadCoverArt()" style="margin-top:12px;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:12px 0;font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:background .15s,border-color .15s;letter-spacing:1px;text-transform:uppercase;" onmouseover="this.style.background='rgba(255,255,255,.16)';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.18)'">
+      <i class="fas fa-download"></i> Download Cover Art
+    </button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="data.js"></script>
+<script src="accounts.js"></script>
+<script src="settings.js"></script>
+<script src="audioEngine.js"></script>
+<script src="stats.js"></script>
+<script src="search.js"></script>
+<script src="lyricsMap.js"></script>
+<script src="aui.js"></script>
+<script src="readySystem.js"></script>
+<script src="urlStateModule.js"></script>
+<script src="init.js"></script>
+
+</body>
+</html>
