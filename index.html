@@ -2,6 +2,17 @@
 <html lang="en">
 <head>
 <link rel="manifest" href="manifest.json">
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/awhtpwkuitsfs/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(e => console.log('SW failed:', e));
+  }
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <script src="pageSet.js"></script>
