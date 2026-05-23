@@ -1,0 +1,99 @@
+{
+  "name": "Syndicate Library",
+  "short_name": "Syndicate",
+  "description": "Your personal music platform — discover, stream, and save music.",
+  "start_url": "/awhtpwkuitsfs/",
+  "scope": "/awhtpwkuitsfs/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["music", "entertainment"],
+  "iarc_rating_id": "",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "splash.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "splash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Syndicate Library Home"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "description": "Go to your home feed",
+      "url": "/awhtpwkuitsfs/#home",
+      "icons": [{ "src": "splash.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Discover",
+      "short_name": "Discover",
+      "description": "Find new music",
+      "url": "/awhtpwkuitsfs/#discover",
+      "icons": [{ "src": "splash.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Library",
+      "short_name": "Library",
+      "description": "Your saved music",
+      "url": "/awhtpwkuitsfs/#library",
+      "icons": [{ "src": "splash.png", "sizes": "192x192" }]
+    }
+  ]
+}
